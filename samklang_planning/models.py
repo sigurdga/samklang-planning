@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from samklang_project import Project
+from samklang_project.models import Project
 
 class Sprint(models.Model):
     """Sprint or milestone"""
@@ -36,9 +36,9 @@ class Issue(models.Model):
     estimated = models.SmallIntegerField(_('estimated'), null=True, blank=True)
     priority = models.SmallIntegerField(_('priority'), null=True, blank=True)
 
-    reporter = models.ForeignKey(User, verbose_name=_('reporter'), null=True, blank=True)
-    assignee = models.ForeignKey(User, verbose_name=_('assignee'), null=True, blank=True)
-    reviewer = models.ForeignKey(User, verbose_name=_('reviewer'), null=True, blank=True)
+    reporter = models.ForeignKey(User, related_name='reported_issues', verbose_name=_('reporter'), null=True, blank=True)
+    assignee = models.ForeignKey(User, related_name='assigned_to_issues', verbose_name=_('assignee'), null=True, blank=True)
+    reviewer = models.ForeignKey(User, related_name='reviewer_for_issues', verbose_name=_('reviewer'), null=True, blank=True)
 
     follows = models.ForeignKey('self', related_name='preceds', verbose_name=_('follows'), blank=True)
 
@@ -63,8 +63,8 @@ class Task(models.Model):
 
     summary = models.TextField()
 
-    reporter = models.ForeignKey(User, verbose_name=_('reporter'), null=True, blank=True)
-    assignee = models.ForeignKey(User, verbose_name=_('assignee'), null=True, blank=True)
+    reporter = models.ForeignKey(User, related_name='reported_tasks', verbose_name=_('reporter'), null=True, blank=True)
+    assignee = models.ForeignKey(User, related_name='assigned_to_tasks', verbose_name=_('assignee'), null=True, blank=True)
 
     created = models.DateTimeField(_('created'))
     finished = models.DateTimeField(_('finished'), null=True, blank=True)
